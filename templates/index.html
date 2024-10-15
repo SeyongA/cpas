@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webcam Stream with YOLOv5</title>
+    <script defer src="../static/index.js"></script>
+    <link rel="stylesheet" href="../static/style.css" />
+  </head>
+  <body>
+    <div class="content">
+      <div id="webcamDiv">
+        <h1>YOLOv5 웹캠 객체 인식</h1>
+        <!-- 웹캠 스트리밍 -->
+        <img src="{{ url_for('video_feed') }}" alt="Webcam Stream" width="800">
+      </div>
+
+      <div id="shoppingItem">
+        <h1>장바구니</h1>
+        <table>
+          <tr>
+            <th>No.</th>
+            <th>상품명</th>
+            <th>수량</th>
+            <th>가격</th>
+            <th>수정</th>
+            <th>삭제</th>
+          </tr>
+          {% for item in items %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ item[1] }}</td>
+            <td>{{ item[2] }}</td>
+            <td>{{ item[3] }}</td>
+            <td>
+              <form action="/update_quantity/{{ item[0] }}" method="POST">
+                <input type="number" name="quantity" value="{{ item[2] }}" min="1">
+                <button type="submit">수정</button> 
+              </form>
+            </td>
+            <td><a href="/delete_item/{{ item[0] }}">X</a></td>
+          </tr>
+          {% endfor %}
+        </table>
+
+        <h2>전체 가격: {{ total_price }} 원</h2>
+
+        <h3>상품 추가</h3>
+        <form action="/add_item" method="POST">
+          <input type="text" name="name" placeholder="상품명" required />
+          <input type="number" name="quantity" placeholder="수량" min="1" required />
+          <input type="number" name="price" placeholder="가격" min="0" step="0.01" required />
+          <button type="submit">추가</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

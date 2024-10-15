@@ -1,0 +1,113 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.body {
+  width: 1vw;
+  height: 1vh;
+}
+.content {
+  width: 1800px;
+  height: 800px;
+  position: relative;
+  margin: 50px auto;
+}
+#webcamDiv {
+  width: 1000px;
+  height: 800px;
+  position: absolute;
+  left: 0;
+}
+#webcam {
+  width: 1000px;
+  height: 750px;
+  margin-top: 25px;
+  border-radius: 15px;
+  transform: scaleX(-1);
+}
+
+#shoppingItem {
+  width: 800px;
+  height: 800px;
+  position: absolute;
+  right: 0;
+}
+
+h1 {
+  text-align: center;
+  margin-top : 30px;
+}
+
+table {
+  width: 80%;
+  border-collapse: collapse;
+  margin: 20px auto;
+  
+}
+
+td,
+th {
+  border: 1px solid #333;
+  border-collapse: collapse;
+}
+
+td {
+  text-align: end;
+  padding: 3px;
+  padding-right: 2%;
+
+}
+
+
+/* 전체 가격 섹션 스타일 */
+h2 {
+  font-size: 24px;
+  color: #333;
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+/* 상품 추가 섹션 스타일 */
+h3 {
+  font-size: 20px;
+  color: #333;
+  margin-top: 30px;
+  text-align: center;
+  font-weight: bold;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+/* input 요소 스타일 */
+form input {
+  width: 150px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* 추가 버튼 스타일 */
+form button {
+  width: 120px;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #0056b3;
+}
