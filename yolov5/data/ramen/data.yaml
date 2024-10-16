@@ -1,0 +1,13 @@
+train: ./data/ramen/train/images
+val: ./data/ramen/valid/images
+test: ./data/ramen/test/images
+
+nc: 2
+names: ['Shin','Jin']
+
+roboflow:
+  workspace: project-frdpl
+  project: -wwiys
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/project-frdpl/-wwiys/dataset/1
