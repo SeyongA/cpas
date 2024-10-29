@@ -2,12 +2,13 @@ train: ./data/ramen/train/images
 val: ./data/ramen/valid/images
 test: ./data/ramen/test/images
 
-nc: 2
-names: ['Shin','Jin']
+
+nc: 3
+names: ['coca-colla', 'jin-ramen', 'orange']
 
 roboflow:
   workspace: project-frdpl
-  project: -wwiys
+  project: product-ebb1e
   version: 1
   license: CC BY 4.0
-  url: https://universe.roboflow.com/project-frdpl/-wwiys/dataset/1
+  url: https://universe.roboflow.com/project-frdpl/product-ebb1e/dataset/1
