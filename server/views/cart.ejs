@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=menu"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Cart</title>
+    <script>
+      // URL에서 클라이언트 ID 추출
+      const clientId = window.location.pathname.split('/').pop();
+
+      async function fetchCart() {  
+        const response = await fetch(`http://127.0.0.1:5000/cart/${clientId}`);
+        const data = await response.json();
+        const listElement = document.getElementById('cartList');
+        listElement.innerHTML = ''; // 기존 목록 초기화
+
+        // JSON 객체를 배열로 변환하여 처리
+        Object.keys(data).forEach((key) => {
+          const item = data[key]; // 각 상품 데이터
+          const listItem = document.createElement('li');
+          listItem.textContent = `Class: ${key}, Confidence: ${(item.confidence * 100).toFixed(2)}%, Quantity: ${item.quantity}`;
+          listElement.appendChild(listItem);
+        });
+      }
+
+      // 페이지 로드 시 webcam src 설정
+      document.addEventListener('DOMContentLoaded', () => {
+        const webcamImg = document.getElementById('webcam');
+        webcamImg.src = `http://127.0.0.1:5000/video_feed/${clientId}`;
+      });
+
+      setInterval(fetchCart, 1000); // 1초마다 장바구니 상태 업데이트
+    </script>
+    <style>
+      /* 전체 스타일 */
+      body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f5f5f5;
+      }
+
+      /* 컨텐츠 레이아웃 */
+      .content {
+        display: flex;
+        justify-content: space-between;
+        padding: 40px;
+      }
+
+      /* 웹캠 영역 */
+      #webcamDiv {
+        flex: 1;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      #webcamDiv h1 {
+        font-size: 24px;
+        font-weight: 500;
+        margin-top: 0;
+        margin-bottom: 20px;
+      }
+
+      #webcam {
+        max-width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin: 0 auto;
+      }
+
+      /* 장바구니 영역 */
+      #cartList {
+        flex: 1;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        list-style-type: none;
+        margin: 0 0 0 40px;
+        padding: 0;
+      }
+
+      #cartList li {
+        padding: 10px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+
+      #cartList li:last-child {
+        border-bottom: none;
+      }
+
+      #clientIdDisplay {
+        font-weight: bold;
+      }
+
+      header {
+        width: 100vw;
+        height: 5vh;
+      }
+      #menuDiv {
+        position: absolute;
+        right: 0;
+        width: 60px;
+        height: 60px;
+      }
+
+      #menu {
+        position: absolute;
+        right: 0;
+        padding: 20px 35px 10px 0;
+        width: 50px;
+        height: 50px;
+        color: #333;
+        cursor: pointer;
+      }
+
+      /* 사이드바 스타일 */
+      #sidebar {
+        position: fixed;
+        top: 0;
+        right: -250px; /* 기본적으로 화면 밖에 위치 */
+        height: 100vh;
+        width: 250px;
+        background: #333;
+        color: #fff;
+        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.2);
+        transform: translateX(0);
+        transition: right 0.3s ease; /* 오른쪽으로 슬라이드 효과 */
+        z-index: 1000;
+        padding: 20px;
+      }
+
+      #sidebar.active {
+        right: 0; /* 화면 안으로 이동 */
+      }
+
+      #sidebar ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      #sidebar li {
+        margin: 20px 0;
+      }
+
+      #sidebar li a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 18px;
+      }
+
+      /* 오버레이 */
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* 활성화 상태 */
+      #overlay.active {
+        opacity: 1;
+        display: block;
+      }
+
+      /* 콘텐츠 흐림 효과 */
+      .blurred {
+        filter: blur(5px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div id="menuDiv">
+        <img src="../public/images/menu.png" alt="menu" id="menu" />
+      </div>
+    </header>
+    <div id="sidebar" class="hidden">
+      <ul>
+        <li><a href="#menu1">Menu 1</a></li>
+        <li><a href="#menu2">Menu 2</a></li>
+      </ul>
+    </div>
+    <div id="overlay" class="hidden"></div>
+    <div class="content">
+      <div id="webcamDiv">
+        <h1>YOLOv5 웹캠 객체 인식</h1>
+        <img id="webcam" alt="Webcam Stream" width="800" />
+      </div>
+      <div id="cartList">
+        <!-- 장바구니 내용이 여기에 추가됩니다. -->
+      </div>
+    </div>
+
+    <script>
+      const menu = document.getElementById('menu'); // 메뉴 이미지
+      const sidebar = document.getElementById('sidebar'); // 사이드바
+      const overlay = document.getElementById('overlay'); // 오버레이
+      const content = document.querySelector('.content'); // 콘텐츠 영역
+
+      // 메뉴 버튼 클릭 시 사이드바 열기
+      menu.addEventListener('click', () => {
+        sidebar.classList.add('active'); // 사이드바 활성화
+        overlay.classList.add('active'); // 오버레이 활성화
+        sidebar.classList.remove('hidden');
+        overlay.classList.remove('hidden');
+        content.classList.add('blurred'); // 콘텐츠 흐림 효과
+      });
+
+      // 오버레이 클릭 시 사이드바 닫기
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active'); // 사이드바 닫기
+        overlay.classList.remove('active'); // 오버레이 숨기기
+        content.classList.remove('blurred'); // 콘텐츠 흐림 효과 제거
+        setTimeout(() => {
+          sidebar.classList.add('hidden');
+          overlay.classList.add('hidden');
+        }, 300); // 애니메이션 종료 후 숨김
+      });
+    </script>
+  </body>
+</html>

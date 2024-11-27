@@ -1,40 +1,62 @@
 import cv2
 import torch
 import sys
-import mysql.connector
-from flask import Flask, render_template, request, redirect, url_for, Response
+from flask import Flask, Response, jsonify, request
+from flask_cors import CORS
+import pathlib
+from pathlib import Path
+pathlib.PosixPath = pathlib.WindowsPath
+
 
 # YOLOv5 경로 추가 (필요할 경우)
 sys.path.append('./yolov5')
 
 app = Flask(__name__)
 
-# MySQL 연결 설정
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",        # MySQL 사용자
-    password="root",    # MySQL 비밀번호
-    database="mydatabase"  # 사용할 데이터베이스
-)
 
-# YOLOv5 사전 학습된 모델 로드
-model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+# YOLOv5 사용자 정의 모델 로드 (best.pt 파일 경로 지정)
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='multii640b40e50m.pt')
 
-# 웹캠에서 프레임 생성 및 YOLO 객체 탐지 적용
-def generate_frames():
+carts = {}  # 클라이언트별 장바구니를 저장할 딕셔너리
+
+def generate_frames(client_id):
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     if not cap.isOpened():
-        print("웹캠을 열 수 없습니다.")  # 웹캠이 제대로 열리지 않는 경우 출력
+        print("웹캠을 열 수 없습니다.")
 
     while True:
         success, frame = cap.read()
         if not success:
-            print("웹캠에서 영상을 받아올 수 없습니다.")  # 프레임을 읽을 수 없을 경우 출력
+            print("웹캠에서 영상을 받아올 수 없습니다.")
             break
 
         # YOLO 객체 탐지
         results = model(frame)
-        results.render()
+        
+        # 인식된 객체 정보 전송
+        detected_objects = []
+        for *box, conf, cls in results.xyxy[0]:
+            if conf > 0.4:  
+                detected_objects.append({'class': str(int(cls)), 'confidence': conf.item()})
+
+        # 클라이언트의 장바구니에 상품 추가
+        if client_id not in carts:
+            carts[client_id] = {}
+
+        for obj in detected_objects:
+            product_id = obj['class']
+            if product_id in carts[client_id]:
+                # 이미 있는 경우 confidence 업데이트
+                carts[client_id][product_id]['confidence'] = max(
+                    carts[client_id][product_id]['confidence'], 
+                    obj['confidence']
+                )
+            else:
+                # 새로 상품 추가
+                carts[client_id][product_id] = {
+                    'quantity': 1,
+                    'confidence': obj['confidence']
+                }
 
         # 프레임을 JPEG로 인코딩
         ret, buffer = cv2.imencode('.jpg', frame)
@@ -45,62 +67,20 @@ def generate_frames():
 
     cap.release()
 
-# 홈 페이지 (장바구니 데이터 조회)
-def get_db_connection():
-    if not db.is_connected():
-        db.reconnect()
-    return db.cursor()
+@app.route('/video_feed/<client_id>')
+def video_feed(client_id):
+    return Response(generate_frames(client_id), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@app.route('/')
-def index():
-    cursor = get_db_connection()  # MySQL 연결 확인 및 커서 생성
-    cursor.execute("SELECT id, name, quantity, price FROM shopping_cart")  # 장바구니 테이블에서 데이터 가져오기
-    items = cursor.fetchall()
-
-    # 전체 가격 계산
-    total_price = sum(item[2] * item[3] for item in items)
-
-    return render_template('index.html', items=items, total_price=total_price)
-# 상품 추가 기능
-@app.route('/add_item', methods=['POST'])
-def add_item():
-    name = request.form['name']
-    quantity = request.form['quantity']
-    price = request.form['price']
-
-    cursor = db.cursor()
-    cursor.execute("INSERT INTO shopping_cart (name, quantity, price) VALUES (%s, %s, %s)", (name, quantity, price))
-    db.commit()
-
-    return redirect(url_for('index'))
-
-# 상품 삭제 기능
-@app.route('/delete_item/<int:item_id>')
-def delete_item(item_id):
-    cursor = db.cursor()
-    cursor.execute("DELETE FROM shopping_cart WHERE id = %s", (item_id,))
-    db.commit()
-
-    return redirect(url_for('index'))
-
-# 수량 수정 기능
-@app.route('/update_quantity/<int:item_id>', methods=['POST'])
-def update_quantity(item_id):
-    new_quantity = request.form['quantity']
-
-    cursor = db.cursor()
-    cursor.execute("UPDATE shopping_cart SET quantity = %s WHERE id = %s", (new_quantity, item_id))
-    db.commit()
-
-    return redirect(url_for('index'))
-
-# 웹캠 객체 인식 스트리밍 엔드포인트
-
-@app.route('/video_feed')
-def video_feed():
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
+@app.route('/cart/<client_id>', methods=['GET'])
+def get_cart(client_id):
+    # 클라이언트 ID가 존재하지 않으면 빈 딕셔너리 반환
+    cart_data = carts.get(client_id, {})
+    
+    # 디버깅용 로그 추가
+    print(f"Client ID: {client_id}")
+    print(f"Cart Data: {cart_data}")
+    
+    return jsonify(cart_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
