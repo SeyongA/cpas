@@ -9,7 +9,8 @@
         font-family: Arial, sans-serif;
         margin: 0;
         padding: 0;
-        background-color: #f2f2f2;
+        background-image: url('../public/images/bkimg.png');
+        background-size: cover;
       }
 
       /* 콘텐츠 스타일 */
@@ -26,33 +27,41 @@
         padding: 10px;
         font-size: 16px;
         border: 1px solid #ccc;
-        border-radius: 5px;
+        border-radius: 10px;
         width: 300px;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
       }
 
       /* 버튼 스타일 */
       #cartButton {
-        background-color: #4caf50;
+        background-color: #f35959;
         color: white;
-        padding: 10px 20px;
+        padding: 20px 100px;
         border: none;
-        border-radius: 5px;
+        border-radius: 60px;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 30px;
       }
 
       #cartButton:hover {
         background-color: #45a049;
       }
+
+      #logoImg{
+        width: 300px;
+        padding: 30px;
+      }
     </style>
   </head>
   <body>
     <div class="content">
-      <div>
-        <input type="text" id="inputText" placeholder="이메일을 입력하세요." />
+      <div id="logoDiv">
+        <img src="../public/images/KakaoTalk_20241203_154356097.png" id="logoImg">
       </div>
-      <button id="cartButton">시작</button>
+      <div>
+        <input type="email" id="inputText" placeholder="이메일을 입력하세요." />
+      </div>
+      <button id="cartButton">쇼핑 시작</button>
     </div>
 
     <script>
@@ -60,14 +69,34 @@
         const inputText = document.querySelector('#inputText');
         const cartButton = document.querySelector('#cartButton');
 
+        // 이메일 유효성 검사 함수
+        function isValidEmail(email) {
+          // 간단한 이메일 정규표현식
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return emailRegex.test(email);
+        }
+
         inputText.addEventListener('keyup', (event) => {
           if (event.key === 'Enter') {
-            cartButton.click();
+            // 이메일 형식 검사 후 버튼 클릭
+            if (isValidEmail(inputText.value)) {
+              cartButton.click();
+            } else {
+              // 유효하지 않은 이메일일 경우 경고
+              alert('올바른 이메일 형식을 입력해주세요.');
+              inputText.focus();
+            }
           }
         });
 
         cartButton.addEventListener('click', () => {
-          window.location.href = `http://localhost:8000/cart/${inputText.value}`;
+          // 버튼 클릭 시에도 이메일 형식 검사
+          if (isValidEmail(inputText.value)) {
+            window.location.href = `http://localhost:8000/cart/${inputText.value}`;
+          } else {
+            alert('올바른 이메일 형식을 입력해주세요.');
+            inputText.focus();
+          }
         });
       });
     </script>
