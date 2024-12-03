@@ -1,312 +1,316 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Self-Go</title>
     <style>
-        :root {
-            --primary-bg: #f4f6f9;
-            --secondary-bg: #ffffff;
-            --text-primary: #1a2b3c;
-            --text-secondary: #4a5568;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-        }
+      :root {
+        --primary-bg: #f4f6f9;
+        --secondary-bg: #ffffff;
+        --text-primary: #1a2b3c;
+        --text-secondary: #4a5568;
+        --accent-blue: #3b82f6;
+        --accent-green: #10b981;
+        --accent-red: #ef4444;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: var(--primary-bg);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+          sans-serif;
+        background-color: var(--primary-bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
 
-        /* Header */
-        header {
-            background-color: var(--secondary-bg);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 100;
-            padding: 15px 0;
-        }
+      /* Header */
+      header {
+        background-color: var(--secondary-bg);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 100;
+        padding: 15px 0;
+      }
 
-        .header-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
+      .header-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
 
-        #logoImg {
-            height: 40px;
-            object-fit: contain;
-        }
+      #logoImg {
+        height: 40px;
+        object-fit: contain;
+      }
 
-        #menu {
-            width: 30px;
-            height: 30px;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
+      #menu {
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+      }
 
-        #menu:hover {
-            transform: scale(1.1);
-        }
+      #menu:hover {
+        transform: scale(1.1);
+      }
 
-        /* Content */
+      /* Content */
+      .content {
+        display: flex;
+        gap: 30px;
+        padding: 100px 15px 70px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section {
+        background-color: var(--secondary-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 25px;
+        flex: 1;
+      }
+
+      #webcamDiv h1,
+      #cartList h2 {
+        font-size: 22px;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      #webcam {
+        width: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      #cartList {
+        list-style-type: none;
+      }
+
+      #cartList li {
+        background-color: var(--primary-bg);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+      }
+
+      #cartList li:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Sidebar */
+      #sidebar {
+        position: fixed;
+        top: 0;
+        right: -250px;
+        width: 250px;
+        height: 100%;
+        background-color: var(--accent-blue);
+        color: white;
+        transition: right 0.3s ease;
+        z-index: 200;
+        padding: 30px;
+      }
+
+      #sidebar.active {
+        right: 0;
+      }
+
+      #sidebar ul {
+        list-style: none;
+        margin-top: 20px;
+      }
+
+      #sidebar li {
+        margin: 15px 0;
+        cursor: pointer;
+      }
+
+      /* Overlay */
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 150;
+        pointer-events: none;
+      }
+
+      #overlay.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      /* Footer */
+      footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: var(--secondary-bg);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        padding: 15px 0;
+        z-index: 100;
+      }
+
+      #footerDiv {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      #exit,
+      #buy {
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 500;
+      }
+
+      #exit {
+        background-color: var(--accent-red);
+        color: white;
+      }
+
+      #buy {
+        background-color: var(--accent-green);
+        color: white;
+      }
+
+      #exit:hover,
+      #buy:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
         .content {
-            display: flex;
-            gap: 30px;
-            padding: 100px 15px 70px;
-            max-width: 1200px;
-            margin: 0 auto;
+          flex-direction: column;
         }
-
-        .section {
-            background-color: var(--secondary-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            flex: 1;
-        }
-
-        #webcamDiv h1, #cartList h2 {
-            font-size: 22px;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        #webcam {
-            width: 100%;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-
-        #cartList {
-            list-style-type: none;
-        }
-
-        #cartList li {
-            background-color: var(--primary-bg);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        #cartList li:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Sidebar */
-        #sidebar {
-            position: fixed;
-            top: 0;
-            right: -250px;
-            width: 250px;
-            height: 100%;
-            background-color: var(--accent-blue);
-            color: white;
-            transition: right 0.3s ease;
-            z-index: 200;
-            padding: 30px;
-        }
-
-        #sidebar.active {
-            right: 0;
-        }
-
-        #sidebar ul {
-            list-style: none;
-            margin-top: 20px;
-        }
-
-        #sidebar li {
-            margin: 15px 0;
-            cursor: pointer;
-        }
-
-        /* Overlay */
-        #overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: 150;
-            pointer-events: none;
-        }
-
-        #overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        /* Footer */
-        footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background-color: var(--secondary-bg);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-            padding: 15px 0;
-            z-index: 100;
-        }
-
-        #footerDiv {
-            display: flex;
-            justify-content: space-between;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-
-        #exit, #buy {
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        #exit {
-            background-color: var(--accent-red);
-            color: white;
-        }
-
-        #buy {
-            background-color: var(--accent-green);
-            color: white;
-        }
-
-        #exit:hover, #buy:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .content {
-                flex-direction: column;
-            }
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <header>
-        <div class="header-wrapper">
-            <img src="../public/images/KakaoTalk_20241203_154356097.png" id="logoImg" alt="Self-Go Logo" />
-            <img src="../public/images/menu.png" id="menu" alt="Menu" />
-        </div>
+      <div class="header-wrapper">
+        <img src="../public/images/KakaoTalk_20241203_154356097.png" id="logoImg" alt="Self-Go Logo" />
+        <img src="../public/images/menu.png" id="menu" alt="Menu" />
+      </div>
     </header>
 
     <div id="sidebar" class="hidden">
-        <h3>메뉴</h3>
-        <ul>
-            <li onclick="window.location.href=`../../map/${clientId}`">Map</li>
-        </ul>
+      <h3>메뉴</h3>
+      <ul>
+        <li onclick="window.location.href=`../../map/${clientId}`">Map</li>
+      </ul>
     </div>
 
     <div id="overlay" class="hidden"></div>
 
     <div class="content">
-        <div id="webcamDiv" class="section">
-            <h1>YOLOv5 웹캠 객체 인식</h1>
-            <img id="webcam" alt="Webcam Stream" />
-        </div>
-        <div id="cartList" class="section">
-            <h2>장바구니</h2>
-            <!-- Cart items will be dynamically added here -->
-        </div>
+      <div id="webcamDiv" class="section">
+        <h1>YOLOv5 웹캠 객체 인식</h1>
+        <img id="webcam" alt="Webcam Stream" />
+      </div>
+      <div id="cartList" class="section">
+        <h2>장바구니</h2>
+        <!-- Cart items will be dynamically added here -->
+      </div>
     </div>
 
     <footer>
-        <div id="footerDiv">
-            <div id="exit" onclick="window.location.href='../../'">쇼핑 종료</div>
-            <div id="buy">결제</div>
-        </div>
+      <div id="footerDiv">
+        <div id="exit" onclick="window.location.href='../../'">쇼핑 종료</div>
+        <div id="buy">결제</div>
+      </div>
     </footer>
 
     <script>
-        const clientId = window.location.pathname.split('/').pop();
+      const clientId = window.location.pathname.split('/').pop();
 
-        async function fetchCart() {
-            const response = await fetch(`http://127.0.0.1:5000/cart/${clientId}`);
-            const data = await response.json();
-            const listElement = document.getElementById('cartList').querySelector('h2 + *') || document.createElement('ul');
-            listElement.innerHTML = '';
+      async function fetchCart() {
+        const response = await fetch(`http://127.0.0.1:5000/cart/${clientId}`);
+        const data = await response.json();
+        const listElement = document.getElementById('cartList').querySelector('h2 + *') || document.createElement('ul');
+        listElement.innerHTML = '';
 
-            Object.keys(data).forEach((key) => {
-                const item = data[key];
-                const listItem = document.createElement('li');
-                listItem.innerHTML = `
+        Object.keys(data).forEach((key) => {
+          const item = data[key];
+          const listItem = document.createElement('li');
+          listItem.innerHTML = `
                     <div>
                         <strong>${key}</strong>
                         <p>Confidence: ${(item.confidence * 100).toFixed(2)}%, Quantity: ${item.quantity}</p>
                     </div>
                 `;
-                listElement.appendChild(listItem);
-            });
-
-            if (!listElement.parentNode) {
-                document.getElementById('cartList').appendChild(listElement);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const webcamImg = document.getElementById('webcam');
-            webcamImg.src = `http://127.0.0.1:5000/video_feed/${clientId}`;
-            fetchCart();
-            setInterval(fetchCart, 1000);
-
-            const menu = document.getElementById('menu');
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('overlay');
-            const content = document.querySelector('.content');
-
-            menu.addEventListener('click', () => {
-                sidebar.classList.add('active');
-                overlay.classList.add('active');
-                sidebar.classList.remove('hidden');
-                overlay.classList.remove('hidden');
-                content.classList.add('blurred');
-            });
-
-            overlay.addEventListener('click', () => {
-                sidebar.classList.remove('active');
-                overlay.classList.remove('active');
-                content.classList.remove('blurred');
-                setTimeout(() => {
-                    sidebar.classList.add('hidden');
-                    overlay.classList.add('hidden');
-                }, 300);
-            });
+          listElement.appendChild(listItem);
         });
+
+        if (!listElement.parentNode) {
+          document.getElementById('cartList').appendChild(listElement);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const webcamImg = document.getElementById('webcam');
+        webcamImg.src = `http://127.0.0.1:5000/video_feed/${clientId}`;
+        fetchCart();
+        setInterval(fetchCart, 1000);
+
+        const menu = document.getElementById('menu');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const content = document.querySelector('.content');
+
+        menu.addEventListener('click', () => {
+          sidebar.classList.add('active');
+          overlay.classList.add('active');
+          sidebar.classList.remove('hidden');
+          overlay.classList.remove('hidden');
+          content.classList.add('blurred');
+        });
+
+        overlay.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          content.classList.remove('blurred');
+          setTimeout(() => {
+            sidebar.classList.add('hidden');
+            overlay.classList.add('hidden');
+          }, 300);
+        });
+      });
     </script>
-</body>
+  </body>
 </html>

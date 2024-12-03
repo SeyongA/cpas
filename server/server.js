@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const db = require('./models');
 const app = express();
 const PORT = 8000;
 
@@ -18,7 +19,8 @@ const apiRouter = require('./routes/api');
 app.use('/api/cam', apiRouter);
 
 
-app.listen(PORT, () => {
-  console.log(`http://localhost:${PORT}`);
+db.sequelize.sync({ force: true }).then(() => {
+  app.listen(PORT, () => {
+    console.log(`http://localhost:${PORT}`);
+  });
 });
-  
