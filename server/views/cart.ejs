@@ -299,24 +299,21 @@
     <footer>
       <div id="footerDiv">
         <div id="exit" onclick="window.location.href='../../'">쇼핑 종료</div>
-        <div id="buy">결제</div>
+        <div id="buy" onclick="window.location.href=`../../pay/${clientId}`">결제</div>
       </div>
     </footer>
 
     <script>
       const clientId = window.location.pathname.split('/').pop();
-
       async function fetchCart() {
         try {
           const response = await axios.get(`http://127.0.0.1:5000/cart/${clientId}`);
           const flaskData = response.data;
-          console.log('Flask data:', flaskData); // 디버깅용
 
           const productResponse = await axios.post(`/api/data/${clientId}`, {
             email: clientId,
             cartData: flaskData,
           });
-          console.log('Product response:', productResponse.data); // 디버깅용
 
           const products = productResponse.data.products;
           if (!products || products.length === 0) {
@@ -324,8 +321,11 @@
             return;
           }
 
-          const listElement = document.getElementById('cartList').querySelector('h2 + *') || document.createElement('ul');
-          listElement.innerHTML = '';
+          // cartListDiv 변수 선언 제거하고 바로 getElementById 사용
+          document.getElementById('cartList').innerHTML = '<h2>장바구니</h2>'; // h2 태그만 남기고 초기화
+
+          // 새로운 ul 엘리먼트 생성
+          const listElement = document.createElement('ul');
 
           let totalQuantity = 0;
           let totalPrice = 0;
@@ -412,7 +412,7 @@
         webcamImg.src = `http://127.0.0.1:5000/video_feed/${clientId}`;
 
         fetchCart(); // 초기 로드
-        // setInterval(fetchCart, 1000); // 1초마다 업데이트
+        setInterval(fetchCart, 1000); // 1초마다 업데이트
 
         const menu = document.getElementById('menu');
         const sidebar = document.getElementById('sidebar');

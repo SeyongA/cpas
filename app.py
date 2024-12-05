@@ -31,22 +31,22 @@ def generate_frames(client_id):
             break
 
         # YOLO 객체 탐지
-        results = model(frame)
+        results = model(frame) 
         
         # 인식된 객체 정보 전송
         detected_objects = []
         for *box, conf, cls in results.xyxy[0]:
-            if conf > 0.4:  
+            if conf > 0.5:  
                 detected_objects.append({'class': str(int(cls)), 'confidence': conf.item()})
 
         # 클라이언트의 장바구니에 상품 추가
         if client_id not in carts:
             carts[client_id] = {}
 
-        for obj in detected_objects:
-            product_id = obj['class']
-            if product_id in carts[client_id]:
-                # 이미 있는 경우 confidence 업데이트
+        for obj in detected_objects: 
+            product_id = obj['class'] 
+            if product_id in carts[client_id]: 
+                # 이미 있는 경우 confidence 업데이트 
                 carts[client_id][product_id]['confidence'] = max(
                     carts[client_id][product_id]['confidence'], 
                     obj['confidence']

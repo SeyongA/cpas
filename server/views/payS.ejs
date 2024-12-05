@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 완료</title>
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-icon::after {
+            content: "✓";
+            font-size: 40px;
+            color: white;
+        }
+
+        .success-title {
+            color: #4CAF50;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .order-details {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .order-details p {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .home-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .home-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon"></div>
+        <h1 class="success-title">결제가 완료되었습니다!</h1>
+        <p class="success-message">
+            결제가 성공적으로 처리되었습니다.<br>
+            결제 상세 내역은 등록된 이메일로 발송됩니다.
+        </p>
+
+        <div class="order-details">
+            <p><strong>주문 번호:</strong> <span id="orderNumber"></span></p>
+            <p><strong>결제 금액:</strong> <span id="amount"></span>원</p>
+            <p><strong>결제 일시:</strong> <span id="paymentDate"></span></p>
+            <p><strong>결제 방법:</strong> <span id="paymentMethod"></span></p>
+        </div>
+
+        <a href="/" class="home-button">홈으로 돌아가기</a>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 주문번호 생성 (예시)
+            const orderNumber = 'ORD' + Date.now().toString().slice(-8);
+            document.getElementById('orderNumber').textContent = orderNumber;
+
+            // 현재 시간
+            const now = new Date();
+            const dateString = now.toLocaleString('ko-KR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('paymentDate').textContent = dateString;
+
+            // URL 파라미터에서 결제 정보 가져오기
+            const urlParams = new URLSearchParams(window.location.search);
+            const amount = urlParams.get('amount') || '2,500';
+            const paymentMethod = urlParams.get('method') || '카드';
+
+            document.getElementById('amount').textContent = amount.toLocaleString();
+            document.getElementById('paymentMethod').textContent = paymentMethod;
+        });
+    </script>
+</body>
+</html>

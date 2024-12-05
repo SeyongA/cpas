@@ -209,7 +209,7 @@
         width: 100%;
         max-width: 800px;
         padding: 20px;
-        margin-top: 20px;
+        margin-top: 100px;
         background: #ffffff;
         border-radius: 10px;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -222,46 +222,9 @@
         margin-bottom: 20px;
       }
 
-      .sections {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-gap: 15px;
-        width: 100%;
-      }
 
-      .section {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f5f5f5;
-        border-radius: 8px;
-        padding: 20px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #333;
-        text-align: center;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-      }
 
-      /* 코너별 색상 */
-      .section-1,
-      .section-4,
-      .section-7 {
-        background: #ffcc80;
-      }
 
-      .section-2,
-      .section-5,
-      .section-8 {
-        background: #81d4fa;
-      }
-
-      .section-3,
-      .section-6,
-      .section-9 {
-        background: #a5d6a7;
-      }
 
       /* 호버 효과 */
       .section:hover {
@@ -347,18 +310,7 @@
     </div>
     <div id="overlay" class="hidden"></div>
     <div class="container content">
-      <div class="legend">출입구</div>
-      <div class="sections">
-        <div class="section section-1">과자 코너 1</div>
-        <div class="section section-2">라면 코너 1</div>
-        <div class="section section-3">음료 냉장고 1</div>
-        <div class="section section-4">과자 코너 2</div>
-        <div class="section section-5">라면 코너 2</div>
-        <div class="section section-6">음료 냉장고 2</div>
-        <div class="section section-7">계산대</div>
-        <div class="section section-8">계산대</div>
-        <div class="section section-9">계산대</div>
-      </div>
+      <img src="../public/images/map.png" alt="">
     </div>
     <script>
       const clientId = window.location.pathname.split('/').pop();
