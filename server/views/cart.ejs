@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>Self-Go</title>
     <style>
       :root {
@@ -212,12 +213,58 @@
         opacity: 0.9;
         transform: translateY(-2px);
       }
+      /* 장바구니 스타일 추가 */
+      .cart-item {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 15px;
+        align-items: center;
+      }
 
-      /* Responsive Design */
-      @media (max-width: 768px) {
-        .content {
-          flex-direction: column;
-        }
+      .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .quantity-btn {
+        width: 25px;
+        height: 25px;
+        border: none;
+        border-radius: 4px;
+        background-color: var(--accent-blue);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .quantity-btn:hover {
+        opacity: 0.9;
+      }
+
+      .cart-summary {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid var(--primary-bg);
+      }
+
+      .summary-line {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .summary-line.total {
+        font-weight: bold;
+        font-size: 1.2em;
+        color: var(--accent-blue);
+      }
+
+      .price {
+        text-align: right;
+        font-weight: 500;
       }
     </style>
   </head>
@@ -230,9 +277,10 @@
     </header>
 
     <div id="sidebar" class="hidden">
-      <h3>메뉴</h3>
+      <h2>메뉴</h2>
       <ul>
-        <li onclick="window.location.href=`../../map/${clientId}`">Map</li>
+        <li onclick="window.location.href=`../../cart/${clientId}`">장바구니</li>
+        <li onclick="window.location.href=`../../map/${clientId}`">매장안내</li>
       </ul>
     </div>
 
@@ -245,7 +293,6 @@
       </div>
       <div id="cartList" class="section">
         <h2>장바구니</h2>
-        <!-- Cart items will be dynamically added here -->
       </div>
     </div>
 
@@ -260,33 +307,112 @@
       const clientId = window.location.pathname.split('/').pop();
 
       async function fetchCart() {
-        const response = await fetch(`http://127.0.0.1:5000/cart/${clientId}`);
-        const data = await response.json();
-        const listElement = document.getElementById('cartList').querySelector('h2 + *') || document.createElement('ul');
-        listElement.innerHTML = '';
+        try {
+          const response = await axios.get(`http://127.0.0.1:5000/cart/${clientId}`);
+          const flaskData = response.data;
+          console.log('Flask data:', flaskData); // 디버깅용
 
-        Object.keys(data).forEach((key) => {
-          const item = data[key];
-          const listItem = document.createElement('li');
-          listItem.innerHTML = `
-                    <div>
-                        <strong>${key}</strong>
-                        <p>Confidence: ${(item.confidence * 100).toFixed(2)}%, Quantity: ${item.quantity}</p>
-                    </div>
-                `;
-          listElement.appendChild(listItem);
+          const productResponse = await axios.post(`/api/data/${clientId}`, {
+            email: clientId,
+            cartData: flaskData,
+          });
+          console.log('Product response:', productResponse.data); // 디버깅용
+
+          const products = productResponse.data.products;
+          if (!products || products.length === 0) {
+            console.log('No products received');
+            return;
+          }
+
+          const listElement = document.getElementById('cartList').querySelector('h2 + *') || document.createElement('ul');
+          listElement.innerHTML = '';
+
+          let totalQuantity = 0;
+          let totalPrice = 0;
+
+          products.forEach((item) => {
+            totalQuantity += item.quantity;
+            totalPrice += item.price * item.quantity;
+
+            const listItem = document.createElement('li');
+            listItem.className = 'cart-item';
+            listItem.setAttribute('data-product-id', item.productId);
+            listItem.innerHTML = `
+        <div class="item-info">
+          <strong>${item.productName}</strong>
+          <p>상품번호: ${item.productId + 1}</p>
+        </div>
+        <div class="quantity-controls">
+          <button class="quantity-btn minus" onclick="updateQuantity(${item.productId}, -1)">-</button>
+          <span class="quantity">${item.quantity}</span>
+          <button class="quantity-btn plus" onclick="updateQuantity(${item.productId}, 1)">+</button>
+        </div>
+        <div class="price">
+          ${item.price.toLocaleString()}원
+        </div>
+      `;
+            listElement.appendChild(listItem);
+          });
+
+          // 전체 합계 정보 추가
+          const summaryDiv = document.createElement('div');
+          summaryDiv.className = 'cart-summary';
+          summaryDiv.innerHTML = `
+      <div class="summary-line">
+        <span>전체 상품 수:</span>
+        <span>${totalQuantity}개</span>
+      </div>
+      <div class="summary-line total">
+        <span>전체 금액:</span>
+        <span>${totalPrice.toLocaleString()}원</span>
+      </div>
+    `;
+
+          // 장바구니에 목록과 합계 추가
+          const cartListDiv = document.getElementById('cartList');
+          if (!listElement.parentNode) {
+            cartListDiv.appendChild(listElement);
+          }
+          cartListDiv.appendChild(summaryDiv);
+        } catch (error) {
+          console.error('Error fetching cart:', error);
+        }
+      }
+
+      // 수량 업데이트 함수
+      function updateQuantity(productId, change) {
+        const quantityElement = document.querySelector(`li[data-product-id="${productId}"] .quantity`);
+        let quantity = parseInt(quantityElement.textContent);
+        quantity = Math.max(1, quantity + change); // 최소값 1 유지
+        quantityElement.textContent = quantity;
+
+        // 전체 합계 업데이트
+        updateTotals();
+      }
+
+      // 전체 합계 업데이트 함수
+      function updateTotals() {
+        let totalQuantity = 0;
+        let totalPrice = 0;
+
+        document.querySelectorAll('.cart-item').forEach((item) => {
+          const quantity = parseInt(item.querySelector('.quantity').textContent);
+          const price = parseInt(item.querySelector('.price').textContent.replace(/[^0-9]/g, ''));
+          totalQuantity += quantity;
+          totalPrice += price * quantity;
         });
 
-        if (!listElement.parentNode) {
-          document.getElementById('cartList').appendChild(listElement);
-        }
+        // 합계 정보 업데이트
+        document.querySelector('.cart-summary .summary-line:first-child span:last-child').textContent = `${totalQuantity}개`;
+        document.querySelector('.cart-summary .total span:last-child').textContent = `${totalPrice.toLocaleString()}원`;
       }
 
       document.addEventListener('DOMContentLoaded', () => {
         const webcamImg = document.getElementById('webcam');
         webcamImg.src = `http://127.0.0.1:5000/video_feed/${clientId}`;
-        fetchCart();
-        setInterval(fetchCart, 1000);
+
+        fetchCart(); // 초기 로드
+        // setInterval(fetchCart, 1000); // 1초마다 업데이트
 
         const menu = document.getElementById('menu');
         const sidebar = document.getElementById('sidebar');

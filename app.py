@@ -12,10 +12,10 @@ pathlib.PosixPath = pathlib.WindowsPath
 sys.path.append('./yolov5')
 
 app = Flask(__name__)
-
+CORS(app) 
 
 # YOLOv5 사용자 정의 모델 로드 (best.pt 파일 경로 지정)
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='multii640b40e50m.pt')
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='i416b48e50Smulti.pt')
 
 carts = {}  # 클라이언트별 장바구니를 저장할 딕셔너리
 

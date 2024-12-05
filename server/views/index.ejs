@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>Cart</title>
     <style>
       body {
@@ -47,7 +48,7 @@
         background-color: #45a049;
       }
 
-      #logoImg{
+      #logoImg {
         width: 300px;
         padding: 30px;
       }
@@ -56,7 +57,7 @@
   <body>
     <div class="content">
       <div id="logoDiv">
-        <img src="../public/images/KakaoTalk_20241203_154356097.png" id="logoImg">
+        <img src="/public/images/KakaoTalk_20241203_154356097.png" id="logoImg" />
       </div>
       <div>
         <input type="email" id="inputText" placeholder="이메일을 입력하세요." />
@@ -89,10 +90,24 @@
           }
         });
 
-        cartButton.addEventListener('click', () => {
-          // 버튼 클릭 시에도 이메일 형식 검사
-          if (isValidEmail(inputText.value)) {
-            window.location.href = `http://localhost:8000/cart/${inputText.value}`;
+        cartButton.addEventListener('click', async () => {
+          const email = inputText.value;
+          if (isValidEmail(email)) {
+            try {
+              console.log(email);
+
+              const response = await axios.post(`http://localhost:8000/api/data/${email}`, {
+                email: email,
+                cartData: {}, // 또는 필요한 cartData 형식
+              });
+              if (response.status === 200) {
+                window.location.href = `http://localhost:8000/cart/${email}`;
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              const errorMessage = error.response?.data?.message || '서버 오류가 발생했습니다.';
+              alert(errorMessage);
+            }
           } else {
             alert('올바른 이메일 형식을 입력해주세요.');
             inputText.focus();
